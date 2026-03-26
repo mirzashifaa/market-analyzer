@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+.venv/
+
+# Environment variables
+.env
+
+# MacOS
+.DS_Store
+
+# Node later (frontend)
+node_modules/
+
+# Python packaging
+*.egg-info/
+dist/
+build/
