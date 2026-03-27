@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Literal
 
 # --- Incumbents ---
@@ -62,3 +62,18 @@ class SynthesisOutput(BaseModel):
     reasoning: str
     key_opportunities: list[str]
     key_risks: list[str]
+
+# --- API Request / Response ---
+
+class AnalysisRequest(BaseModel):
+    company: str = Field(min_length=2, max_length=100)
+    market: str = Field(min_length=2, max_length=200)
+
+
+class AnalysisResponse(BaseModel):
+    company: str
+    market: str
+    incumbents: IncumbentsOutput
+    emerging_competitors: EmergingCompetitorsOutput
+    market_sizing: MarketSizingOutput
+    synthesis: SynthesisOutput
