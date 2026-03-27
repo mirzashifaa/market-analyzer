@@ -37,3 +37,28 @@ class EmergingCompetitorsOutput(BaseModel):
     velocity_reasoning: str
     trend_summary: str
     summary: str
+
+# --- Market Sizing ---
+
+class MarketSizingOutput(BaseModel):
+    tam: str
+    sam: str
+    growth_rate: str
+    projection: str
+    key_drivers: list[str]    
+    key_risks: list[str]      
+    sources: list[str]
+    sizing_confidence: Literal["high", "medium", "low"]
+
+
+# --- Synthesis ---
+
+class SynthesisOutput(BaseModel):
+    recommendation: Literal["GO", "NO-GO"]
+    confidence: Literal["high", "medium", "low"]
+    white_space_assessment: str
+    competitive_pressure: str
+    market_attractiveness: str
+    reasoning: str
+    key_opportunities: list[str]
+    key_risks: list[str]
