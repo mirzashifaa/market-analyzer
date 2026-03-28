@@ -8,9 +8,35 @@ from agent_modules.incumbents import run_incumbents_agent
 from agent_modules.emerging import run_emerging_agent
 from agent_modules.market_sizing import run_market_sizing_agent
 from agent_modules.synthesis import run_synthesis_agent
+from tenacity import retry, stop_after_attempt, wait_exponential
+from openai import RateLimitError
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=2, min=5, max=30),
+    reraise=True
+)
+async def run_analysis(
+    company: str,
+    market: str,
+) -> AnalysisResponse:
+    incumbents, emerging, market_sizing = await asyncio.gather(
+        run_incumbents_agent(company, market),
+        run_emerging_agent(company, market),
+        run_market_sizing_agent(company, market),
+    )
+    synthesis = await run_synthesis_agent(
+        company=company,
+        market=market,
+        incumbents=incumbents,
+        emerging=emerging,
+        market_sizing=market_sizing,
+    )
+    return incumbents, emerging, market_sizing, synthesis
 
 app = FastAPI(
     title="Market Analyzer",
@@ -28,7 +54,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.get("/health")
 async def health() -> dict[str, str]:
@@ -86,6 +111,17 @@ async def analyze(request: AnalysisRequest) -> AnalysisResponse:
             emerging_competitors=emerging,
             market_sizing=market_sizing,
             synthesis=synthesis,
+        )
+
+    except RateLimitError:
+        logger.warning(
+            "Rate limit hit for %s → %s",
+            request.company,
+            request.market,
+        )
+        raise HTTPException(
+            status_code=429,
+            detail="Rate limit reached. Please wait 30 seconds and try again."
         )
 
     except Exception as e:

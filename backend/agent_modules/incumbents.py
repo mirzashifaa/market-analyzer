@@ -51,6 +51,17 @@ WHITE SPACE RULES
 
 positioning_gaps must describe a **specific underserved opportunity** in the market.
 
+The positioning gap must be specific to this exact market category.
+
+Do not use generic technology wedges like
+"API integration" or "developer-first"
+unless the incumbents research specifically confirms
+those are unaddressed needs in this category.
+
+The gap must come from what the incumbents
+actually lack — not from what the entering
+company theoretically offers.
+
 Valid examples include:
 - an underserved customer segment
 - a missing workflow capability
@@ -62,8 +73,8 @@ Bad example:
 "No tool is both powerful and simple."
 
 Good example:
-"No dominant platform serves developer-first teams that require HR automation
-with deep API integration."
+"No dominant platform serves frontline-heavy enterprises that need referral workflows
+optimized for mobile participation and multi-location hiring."
 
 OUTPUT RULES
 

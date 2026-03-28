@@ -94,18 +94,42 @@ Company fit must be clearly supported by the
 research inputs — not constructed from 
 general reasoning.
 
+The company's core product must have direct 
+functional overlap with the target market.
+
+Ask these three questions:
+1. Does the company currently sell a product 
+   that does something similar to what the 
+   target market requires?
+2. Do the company's existing customers have 
+   the same problem the target market solves?
+3. Does the company's core technology directly 
+   transfer to the target market?
+
+If the answer to all three is NO — that is 
+a strong NO-GO regardless of market size 
+or market attractiveness.
+
+Creative analogies are not fit:
+- "They both involve visuals" is not fit
+- "They both use technology" is not fit
+- "They both serve consumers" is not fit
+- "Their brand could extend here" is not fit
+- "Their data could be useful here" is not fit
+
+Fit requires direct product, customer, or 
+technology overlap — not conceptual similarity.
+
 Do not treat generic strengths such as AI, 
-data, scale, logistics, brand, or platform 
-experience as sufficient evidence of fit 
-unless the research outputs show a direct 
-and credible connection to the target market.
+data, scale, logistics, brand, platform 
+experience, or content expertise as sufficient 
+evidence of fit unless the research outputs 
+show a direct and credible connection to the 
+target market.
 
 Do not invent strategic wedges. Only recognize 
-wedges that are explicitly supported by the 
-company's known strengths in the research outputs.
-
-Do not assume the company has capabilities 
-it does not currently have.
+wedges explicitly supported by the company's 
+known strengths in the research outputs.
 
 A speculative adjacency is not enough for GO.
 
@@ -164,6 +188,18 @@ OUTPUT RULES
 - Do not suggest how the company could enter — 
   only note what signals exist in the market
 
+WRITING RULES
+
+- Keep reasoning concise and non-repetitive.
+- Avoid phrases like:
+  "the recommendation is driven by the fact that..."
+  "therefore, the case is more about..."
+- In already-in-market cases, prefer wording like:
+  "Although the market remains attractive, this is an expansion or innovation case, not a new market entry case."
+- When the company already competes in the category, focus opportunities on:
+  product expansion, AI innovation, workflow improvements, or stronger category leadership
+  rather than market entry.
+
 WHAT NOT TO DO
 
 - Do not summarize each input separately
@@ -176,6 +212,24 @@ WHAT NOT TO DO
   with no obvious market fit
 - Do not recommend GO purely based on market 
   attractiveness when company fit is weak or absent
+  - Do not use creative analogies to justify fit
+- Do not treat "they both involve X" as evidence 
+  of company-market fit
+
+ALREADY IN MARKET RULE
+
+Before evaluating market entry, check whether 
+the entering company already appears as an 
+incumbent in the incumbents research output.
+
+If the company is listed as a major player 
+or market leader in the incumbents output:
+- Set recommendation to NO-GO
+- Set confidence to high
+- State clearly in reasoning: 
+  "This company already competes in this 
+  category. This analysis reflects expansion 
+  or repositioning rather than new market entry."
 
 Return JSON matching this exact schema:
 {

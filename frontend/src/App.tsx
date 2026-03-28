@@ -1,0 +1,121 @@
+import { useState } from "react";
+import { analyze } from "./api";
+import type { AnalysisResponse, AnalysisRequest } from "./types";
+import { InputForm } from "./components/InputForm";
+import { LoadingState } from "./components/LoadingState";
+import { SynthesisCard } from "./components/SynthesisCard";
+import { IncumbentsCard } from "./components/IncumbentsCard";
+import { EmergingCard } from "./components/EmergingCard";
+import { MarketSizingCard } from "./components/MarketSizingCard";
+import "./App.css";
+
+type AppState =
+  | { status: "idle" }
+  | { status: "loading"; company: string; market: string }
+  | { status: "success"; data: AnalysisResponse }
+  | { status: "error"; message: string };
+
+export default function App() {
+  const [state, setState] = useState<AppState>({ status: "idle" });
+
+  const handleSubmit = async (request: AnalysisRequest) => {
+    setState({ status: "loading", company: request.company, market: request.market });
+    try {
+      const data = await analyze(request);
+      setState({ status: "success", data });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Analysis failed. Please try again.";
+      setState({ status: "error", message });
+    }
+  };
+
+  const handleReset = () => setState({ status: "idle" });
+
+  return (
+    <div className="app">
+      <header className="app-header">
+        <div className="header-inner">
+          <div className="header-brand">
+            <span className="brand-mark">◆</span>
+            <span className="brand-name">Market Analyzer</span>
+          </div>
+          {state.status === "success" && (
+            <button className="new-analysis-btn" onClick={handleReset}>
+              New Analysis
+            </button>
+          )}
+        </div>
+      </header>
+
+      <main className="app-main">
+        {state.status === "idle" && (
+          <div className="hero">
+            <div className="hero-eyebrow">Market Intelligence</div>
+            <h1 className="hero-headline">
+              Should your company<br />enter this market?
+            </h1>
+            <p className="hero-sub">
+              Provide a company and market space. The system researches
+              incumbents, emerging competitors, and market sizing —
+              then delivers a Go / No-Go recommendation.
+            </p>
+            <div className="hero-form">
+              <InputForm
+                onSubmit={handleSubmit}
+                loading={false}
+              />
+            </div>
+          </div>
+        )}
+
+        {state.status === "loading" && (
+          <div className="centered">
+            <LoadingState
+              company={state.company}
+              market={state.market}
+            />
+          </div>
+        )}
+
+        {state.status === "error" && (
+          <div className="centered">
+            <div className="error-state">
+              <div className="error-label">Analysis Failed</div>
+              <div className="error-message">{state.message}</div>
+              <button className="retry-btn" onClick={handleReset}>
+                Try Again
+              </button>
+            </div>
+          </div>
+        )}
+
+        {state.status === "success" && (
+          <div className="results">
+            <div className="results-header">
+              <div className="results-query">
+                <span className="results-company">{state.data.company}</span>
+                <span className="results-arrow">→</span>
+                <span className="results-market">{state.data.market}</span>
+              </div>
+            </div>
+
+            <div className="results-grid">
+              <SynthesisCard
+                data={state.data.synthesis}
+                company={state.data.company}
+                market={state.data.market}
+              />
+              <IncumbentsCard data={state.data.incumbents} />
+              <EmergingCard data={state.data.emerging_competitors} />
+              <MarketSizingCard data={state.data.market_sizing} />
+            </div>
+          </div>
+        )}
+      </main>
+
+      <footer className="app-footer">
+        <span>Powered by OpenAI · Tavily · Built with Aucctus FDE Assignment</span>
+      </footer>
+    </div>
+  );
+}
