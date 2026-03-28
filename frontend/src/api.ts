@@ -23,6 +23,12 @@ export async function analyze(
         "Rate limit reached. Please wait 30 seconds and try again."
       );
     }
+    if (error.response?.status === 400) {
+      throw new Error(
+        error.response.data?.detail ||
+          "Market is too broad. Please provide a more specific category."
+      );
+    }
     if (error.response?.status === 500) {
       throw new Error(
         error.response.data?.detail || 

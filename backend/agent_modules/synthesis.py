@@ -41,11 +41,12 @@ applied as a rigid sequence.
 - White space
   Is there a real and specific market gap?
   Is that gap believable and actionable?
-  Does it fit the entering company's strengths?
+  Does it align with directly evidenced product,
+  customer, or technology overlap from the entering company?
   White space is usually the strongest positive 
   signal. If no credible gap exists, the case 
   is materially weaker unless the company has 
-  an unusually strong strategic advantage.
+  unusually strong directly evidenced overlap.
 
 - Competitive pressure
   How entrenched are incumbents?
@@ -61,8 +62,11 @@ applied as a rigid sequence.
   for this company?
 
 - Company fit
-  Does the company have a plausible wedge?
-  Can it realistically exploit the white space?
+  Does the company have directly evidenced product,
+  customer, or technology overlap with the target market?
+  Can it realistically exploit the white space without
+  relying on brand, design, UX, ecosystem strength,
+  or other speculative advantages?
 
 DECISION LOGIC
 
@@ -212,7 +216,7 @@ WHAT NOT TO DO
   with no obvious market fit
 - Do not recommend GO purely based on market 
   attractiveness when company fit is weak or absent
-  - Do not use creative analogies to justify fit
+- Do not use creative analogies to justify fit
 - Do not treat "they both involve X" as evidence 
   of company-market fit
 
@@ -230,6 +234,85 @@ or market leader in the incumbents output:
   "This company already competes in this 
   category. This analysis reflects expansion 
   or repositioning rather than new market entry."
+
+EVIDENCE GROUNDING RULE
+
+All reasoning must be grounded in the structured research inputs:
+- incumbents
+- emerging competitors
+- market sizing
+
+Every major claim must be traceable to evidence from these inputs.
+
+Use the inputs in the following way:
+
+White-space claims must reference:
+- incumbents.positioning_gaps
+- weaknesses of specific incumbent players
+
+Competitive pressure claims must reference:
+- the market leader
+- the number and strength of incumbent players
+- signals from emerging competitors such as capital_velocity or funding momentum
+
+Market attractiveness claims must reference:
+- TAM
+- growth_rate
+- projection
+- growth_drivers
+- market_risks
+
+Do not introduce unsupported claims such as:
+- invented customer segments
+- invented workflow gaps
+- invented integration advantages
+- invented product strengths
+
+If the research evidence is weak or incomplete:
+- lower confidence
+- avoid strong recommendations
+- avoid claiming clear white space
+
+A large market alone is not sufficient for a GO recommendation.
+A plausible company capability alone is not sufficient for a GO recommendation.
+The final recommendation must reflect the combined evidence across incumbents,
+emerging competitors, and market sizing.
+
+DECISION RULE
+
+The final recommendation must cross-reference all three research spaces:
+
+1. Incumbents:
+   - Is there a real market gap or are incumbents already strong and complete?
+2. Emerging competitors:
+   - Is there meaningful market validation or accelerating startup activity?
+3. Market sizing:
+   - Is the market large enough and growing enough to justify entry?
+
+Recommendation guidance:
+- GO: only when there is a credible gap, directly evidenced company fit,
+  and attractive market evidence.
+- NO-GO: when the market is already served, fit is weak, or the case depends
+  on unsupported assumptions.
+- If company fit depends mainly on brand strength, UX quality, ecosystem reputation,
+  or generic AI capability rather than direct overlap, recommendation must be NO-GO.
+- If the evidence is mixed, return cautious reasoning and reduce confidence
+  rather than overstating certainty.
+
+WHITE SPACE RULE
+
+The white-space assessment must come from the incumbent landscape,
+not from an assumed company strength.
+
+Good white-space reasoning:
+- references a specific gap identified in the incumbents analysis
+- explains why existing players leave that gap open
+- connects that gap to broader market signals from emerging competitors or market sizing
+
+Bad white-space reasoning:
+- starts with what the entering company is "good at"
+- invents a niche without support from the research inputs
+- repeats a generic wedge such as "better integrations" or "better UX" without evidence
 
 Return JSON matching this exact schema:
 {
@@ -266,9 +349,33 @@ You are receiving three structured research outputs.
 Cross-reference them to determine whether this 
 company should enter this market.
 
+Before deciding, explicitly test company-market fit:
+
+1. Product overlap:
+   Does the company currently sell something functionally similar
+   to what this market requires?
+
+2. Customer overlap:
+   Do the company's existing customers have the same problem
+   this market solves?
+
+3. Technology overlap:
+   Does the company's core technology directly transfer
+   to the target market?
+
+If the answer to all three is NO, the recommendation must be NO-GO.
+
+Do not infer fit from:
+- brand strength
+- design quality
+- general AI capability
+- ecosystem strength
+- generic platform experience
+
+Only direct overlap counts as fit.
+
 Do not summarize each input independently.
-Reason across them to produce one strategic 
-recommendation.
+Reason across them to produce one strategic recommendation.
 
 Use all three inputs before deciding.
 Do not ignore weak or conflicting evidence.
