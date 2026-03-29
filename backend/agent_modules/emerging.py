@@ -79,7 +79,7 @@ If stage is unclear from search results use Unknown.
 OUTPUT RULES
 
 - Only include companies whose PRIMARY product
-  directly operates in the {market} category
+  directly operates in the target market category
 - Exclude adjacent or tangential startups
 - Return between 3 and 6 emerging competitors.
   If fewer than 6 clearly relevant companies exist,

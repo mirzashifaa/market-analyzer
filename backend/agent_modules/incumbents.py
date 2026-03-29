@@ -25,14 +25,14 @@ of a specific company considering entry.
 
 You must use the search_incumbents tool before producing your final analysis.
 
-ENTERPRISE FILTER
+MARKET FILTER
 
 Only include companies where:
 - The product is a core offering in this category
-- The platform is widely adopted by mid-market or enterprise customers
-- The company has significant market presence
+- The company has significant market presence relevant to the entering company's context
 
-Avoid tools primarily built for individuals or very small teams.
+Include both enterprise-focused and consumer-focused players when relevant to the market being analyzed.
+Avoid tools with negligible market presence.
 
 COMPANY LENS
 
