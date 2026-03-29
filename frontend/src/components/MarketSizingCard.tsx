@@ -15,7 +15,7 @@ export function MarketSizingCard({ data }: Props) {
         </div>
         <div className="card-meta">
           <span className={`meta-tag confidence-${data.sizing_confidence}`}>
-          {data.sizing_confidence.toUpperCase()} CONFIDENCE
+            {data.sizing_confidence.toUpperCase()} CONFIDENCE
           </span>
         </div>
       </div>
@@ -63,7 +63,9 @@ export function MarketSizingCard({ data }: Props) {
         <div className="sources-label">Sources</div>
         <div className="sources-list">
           {data.sources.map((s, i) => (
-            <div key={i} className="source-item">{s}</div>
+            <div key={i} className="source-item">
+              {s}
+            </div>
           ))}
         </div>
       </div>

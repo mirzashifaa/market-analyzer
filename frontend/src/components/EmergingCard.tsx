@@ -39,7 +39,9 @@ export function EmergingCard({ data }: Props) {
               <div className="competitor-focus">{c.focus}</div>
             </div>
             <div className="competitor-middle">
-              <span className={`stage-badge ${c.stage.toLowerCase().replace(" ", "-")}`}>
+              <span
+                className={`stage-badge ${c.stage.toLowerCase().replace(" ", "-")}`}
+              >
                 {c.stage}
               </span>
               <span className="funding-amount">{c.funding}</span>
@@ -58,7 +60,9 @@ export function EmergingCard({ data }: Props) {
         <div className="signals-label">Recent Funding Signals</div>
         <div className="signals-list">
           {data.recent_funding.map((signal, i) => (
-            <div key={i} className="signal-item">{signal}</div>
+            <div key={i} className="signal-item">
+              {signal}
+            </div>
           ))}
         </div>
       </div>

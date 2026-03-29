@@ -15,14 +15,16 @@ export function SynthesisCard({ data, company, market }: Props) {
       <div className="synthesis-header">
         <div className="synthesis-meta">
           <span className="synthesis-label">Opportunity Assessment</span>
-          <span className="synthesis-query">{company} → {market}</span>
+          <span className="synthesis-query">
+            {company} → {market}
+          </span>
         </div>
         <div className="synthesis-verdict">
           <div className={`verdict-text ${isGo ? "go" : "nogo"}`}>
             {data.recommendation}
           </div>
           <div className={`confidence-badge ${data.confidence}`}>
-          {data.confidence.toUpperCase()} CONFIDENCE
+            {data.confidence.toUpperCase()} CONFIDENCE
           </div>
         </div>
       </div>
@@ -48,9 +50,7 @@ export function SynthesisCard({ data, company, market }: Props) {
 
       <div className="synthesis-lists">
         <div className="synthesis-list">
-          <div className="list-header opportunities">
-            Key Opportunities
-          </div>
+          <div className="list-header opportunities">Key Opportunities</div>
           <ul>
             {data.key_opportunities.map((item, i) => (
               <li key={i}>{item}</li>
@@ -59,9 +59,7 @@ export function SynthesisCard({ data, company, market }: Props) {
         </div>
 
         <div className="synthesis-list">
-          <div className="list-header risks">
-            Key Risks
-          </div>
+          <div className="list-header risks">Key Risks</div>
           <ul>
             {data.key_risks.map((item, i) => (
               <li key={i}>{item}</li>

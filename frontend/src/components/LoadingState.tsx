@@ -21,15 +21,26 @@ export function LoadingState({ company, market }: Props) {
           <div className="step-text">Researching incumbent landscape</div>
         </div>
         <div className="loading-step">
-          <div className="step-indicator active" style={{ animationDelay: "0.3s" }} />
-          <div className="step-text">Scanning emerging competitors & funding</div>
+          <div
+            className="step-indicator active"
+            style={{ animationDelay: "0.3s" }}
+          />
+          <div className="step-text">
+            Scanning emerging competitors & funding
+          </div>
         </div>
         <div className="loading-step">
-          <div className="step-indicator active" style={{ animationDelay: "0.6s" }} />
+          <div
+            className="step-indicator active"
+            style={{ animationDelay: "0.6s" }}
+          />
           <div className="step-text">Estimating market size & growth</div>
         </div>
         <div className="loading-step">
-          <div className="step-indicator active" style={{ animationDelay: "0.9s" }} />
+          <div
+            className="step-indicator active"
+            style={{ animationDelay: "0.9s" }}
+          />
           <div className="step-text">Synthesizing opportunity assessment</div>
         </div>
       </div>

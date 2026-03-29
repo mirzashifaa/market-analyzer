@@ -50,10 +50,7 @@ export function IncumbentsCard({ data }: Props) {
       </div>
 
       {data.players.length > 3 && (
-        <button
-          className="expand-btn"
-          onClick={() => setExpanded(!expanded)}
-        >
+        <button className="expand-btn" onClick={() => setExpanded(!expanded)}>
           {expanded ? "Show less" : `+${data.players.length - 3} more`}
         </button>
       )}

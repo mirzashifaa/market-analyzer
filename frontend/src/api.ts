@@ -8,37 +8,31 @@ const client = axios.create({
 });
 
 export async function analyze(
-  request: AnalysisRequest
+  request: AnalysisRequest,
 ): Promise<AnalysisResponse> {
   try {
-    const response = await client.post<AnalysisResponse>(
-      "/analyze",
-      request
-    );
+    const response = await client.post<AnalysisResponse>("/analyze", request);
     return response.data;
   } catch (err) {
     const error = err as AxiosError<{ detail: string }>;
     if (error.response?.status === 429) {
       throw new Error(
-        "Rate limit reached. Please wait 30 seconds and try again."
+        "Rate limit reached. Please wait 30 seconds and try again.",
       );
     }
     if (error.response?.status === 400) {
       throw new Error(
         error.response.data?.detail ||
-          "Market is too broad. Please provide a more specific category."
+          "Market is too broad. Please provide a more specific category.",
       );
     }
     if (error.response?.status === 500) {
       throw new Error(
-        error.response.data?.detail || 
-        "Analysis failed. Please try again."
+        error.response.data?.detail || "Analysis failed. Please try again.",
       );
     }
     if (error.code === "ECONNABORTED") {
-      throw new Error(
-        "Analysis timed out. Please try again."
-      );
+      throw new Error("Analysis timed out. Please try again.");
     }
     throw new Error("Something went wrong. Please try again.");
   }
