@@ -2,18 +2,17 @@ import asyncio
 from agents import Agent, Runner, function_tool
 
 from models.schemas import MarketSizingOutput
-from tools.search import tavily_search, format_search_results
-
+from tools.search import tavily_search_async, format_search_results
 
 @function_tool
-def search_market_sizing(query: str) -> str:
+async def search_market_sizing(query: str) -> str:
     """
     Search the web for market size estimates,
     growth projection, and public summaries
     of industry research.
     Returns formatted search results.
     """
-    results = tavily_search(query=query, max_results=5)
+    results = await tavily_search_async(query=query, max_results=5)
     return format_search_results(results)
 
 

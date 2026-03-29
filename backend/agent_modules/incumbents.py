@@ -2,16 +2,15 @@ import asyncio
 from agents import Agent, Runner, function_tool
 
 from models.schemas import IncumbentsOutput
-from tools.search import tavily_search, format_search_results
-
+from tools.search import tavily_search_async, format_search_results
 
 @function_tool
-def search_incumbents(query: str) -> str:
+async def search_incumbents(query: str) -> str:
     """
     Search the web for incumbent market context.
     Returns formatted search results.
     """
-    results = tavily_search(query=query, max_results=5)
+    results = await tavily_search_async(query=query, max_results=5)
     return format_search_results(results)
 
 
