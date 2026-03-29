@@ -17,7 +17,10 @@ Given two inputs — a company name and a target market — the system:
 3. Estimates TAM, SAM, growth rate, and market trajectory
 4. Synthesizes all three into a Go / No-Go recommendation
 
----
+### Example Output
+
+![Market Analyzer Result](docs/TestCase_GO.png)
+![Market Analyzer Result](docs/TestCase_NOGO.png)
 
 ## Architecture
 ```
@@ -67,8 +70,7 @@ the final recommendation is produced.
 **Parallel execution for research agents**  
 Agents 1, 2, and 3 run concurrently via `asyncio.gather()`. 
 Tavily calls are wrapped in `asyncio.to_thread()` to prevent 
-blocking the event loop. This reduces total analysis time 
-from ~90s sequential to ~30–40s parallel.
+blocking the event loop.
 
 Using GPT-4o-mini for research agents also reduces token
 cost and rate-limit pressure while preserving output
@@ -182,6 +184,10 @@ Enter a company name and a specific market category:
 
 - Use specific market categories: "payroll software" not "HR"
 - Avoid broad categories: "enterprise software", "SaaS", "AI tools"
+
+Note: If the company already operates in the target market as a major player,
+the system returns a deterministic **NO-GO** explaining that the case represents
+market expansion rather than new market entry.
 
 ---
 
