@@ -1,5 +1,6 @@
 import asyncio
 from agents import Agent, Runner
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from models.schemas import (
     IncumbentsOutput,
@@ -172,6 +173,15 @@ Confidence guidance:
 - low: verdict is tentative because underlying 
   evidence is weak, sparse, or conflicting
 
+OUTPUT RELIABILITY
+
+Never mention search tool failures, data retrieval issues,
+or system limitations in the final output.
+
+If evidence is sparse, describe the evidence as limited
+public data and lower confidence accordingly instead of
+describing tool or system problems.
+
 OUTPUT RULES
 
 - recommendation must be exactly: GO or NO-GO
@@ -330,6 +340,11 @@ Return JSON matching this exact schema:
 )
 
 
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=2, min=5, max=30),
+    reraise=True,
+)
 async def run_synthesis_agent(
     company: str,
     market: str,
@@ -349,21 +364,42 @@ You are receiving three structured research outputs.
 Cross-reference them to determine whether this 
 company should enter this market.
 
-Before deciding, explicitly test company-market fit:
+COMPANY–MARKET FIT TEST
 
-1. Product overlap:
-   Does the company currently sell something functionally similar
-   to what this market requires?
+Before deciding GO or NO-GO, explicitly test company–market fit
+using three lenses:
 
-2. Customer overlap:
-   Do the company's existing customers have the same problem
-   this market solves?
+1. Product overlap
+Does the company currently sell a product that directly performs
+the core function required in this market?
 
-3. Technology overlap:
-   Does the company's core technology directly transfer
-   to the target market?
+2. Customer overlap
+Do the company’s existing customers experience the same core
+problem this market solves?
 
-If the answer to all three is NO, the recommendation must be NO-GO.
+3. Technology or infrastructure overlap
+Does the company’s existing platform, APIs, data, workflow, or
+operational infrastructure directly transfer to the target market?
+
+If the answer to all three is NO, the recommendation should be NO-GO.
+
+If at least one of the three is YES with strong supporting evidence
+from the research inputs, the company may have sufficient fit to
+justify a GO or cautious GO — but only if white space and market
+signals also support entry.
+
+Do NOT infer company fit from:
+- brand strength alone
+- generic AI capability
+- vague ecosystem advantages
+- design quality or UI strength
+
+Company fit must be grounded in clear overlap in:
+- customer problems
+- platform infrastructure
+- operational workflows
+- transaction systems
+- data or technical capabilities
 
 Do not infer fit from:
 - brand strength

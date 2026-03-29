@@ -4,10 +4,11 @@ from agents import Agent, Runner, function_tool
 from models.schemas import EmergingCompetitorsOutput
 from tools.search import tavily_search_async, format_search_results
 
+
 @function_tool
 async def search_emerging(query: str) -> str:
     """
-    Search the web for startup funding and 
+    Search the web for startup funding and
     emerging competitor information.
     Returns formatted search results.
     """
@@ -17,7 +18,7 @@ async def search_emerging(query: str) -> str:
 
 emerging_agent = Agent(
     name="Emerging Competitors Research Agent",
-    model="gpt-4o",
+    model="gpt-4o-mini",
     instructions="""
 You are a startup and venture capital intelligence analyst
 specialising in emerging market entrants and funding activity.
@@ -27,6 +28,11 @@ and assess the velocity of capital flowing into the space.
 
 You must use the search_emerging tool before producing your 
 final analysis.
+
+Use the tavily_search tool to gather evidence needed for this analysis.
+Prefer a single search pass using the suggested queries.
+Do not run follow-up searches unless the initial results are clearly empty or irrelevant.
+Use the available results to complete the structured output.
 
 SCOPE FILTER
 
@@ -61,6 +67,10 @@ capital_velocity must be one of: high, medium, low
   selective investment, moderate interest
 - low: limited funding, declining activity, 
   few new entrants
+- If only a few relevant funding events are found,
+  use them to infer low or medium velocity conservatively.
+- Sparse evidence should lower confidence, not force
+  generic "data unavailable" language.
 
 velocity_reasoning must cite specific evidence:
 - number of rounds
@@ -121,6 +131,14 @@ RELIABILITY RULES
   that might exist
 - recent_funding must only include Seed, Series A, 
   and Series B funding events — no exceptions
+- If search results provide partial but relevant startup
+  evidence, return the clearly supported companies found
+  and estimate capital_velocity conservatively.
+- Do not claim search tool limitations or retrieval failure
+  unless search results are truly empty.
+- When funding data is sparse, explain that public evidence
+  is limited and use conservative language in velocity_reasoning,
+  trend_summary, and summary rather than leaving the section blank.
 
 Return JSON matching this exact schema:
 {
@@ -146,10 +164,7 @@ Return JSON matching this exact schema:
 )
 
 
-async def run_emerging_agent(
-    company: str,
-    market: str
-) -> EmergingCompetitorsOutput:
+async def run_emerging_agent(company: str, market: str) -> EmergingCompetitorsOutput:
     """
     Execute the emerging competitors research agent.
     """
@@ -168,25 +183,21 @@ they signal about market momentum.
 You must use the search tool before generating your analysis.
 
 Suggested searches:
-- {market} startup funding 2024 2025
-- new startups in {market}
-- venture capital investment {market} trends
-- {market} Series A Series B companies
+- {market} startup funding Series A Series B 2024 2025
+- {market} startup raised Seed Series A 2024 2025
+- {market} venture-backed startups funding round
+- {market} emerging startup funding news
 """
     result = await Runner.run(
         emerging_agent,
-        input=prompt
+        input=prompt,
+        max_turns=4,
     )
     return result.final_output
 
 
-def run_emerging_agent_sync(
-    company: str,
-    market: str
-) -> EmergingCompetitorsOutput:
+def run_emerging_agent_sync(company: str, market: str) -> EmergingCompetitorsOutput:
     """
     Synchronous wrapper for testing.
     """
-    return asyncio.run(
-        run_emerging_agent(company, market)
-    )
+    return asyncio.run(run_emerging_agent(company, market))

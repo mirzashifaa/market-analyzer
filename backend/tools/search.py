@@ -14,6 +14,9 @@ def tavily_search(query: str, max_results: int = 5) -> list[dict]:
     response = client.search(
         query=query,
         max_results=max_results,
+        search_depth="advanced",
+        include_answer=True,
+        include_raw_content=False,
     )
     return response.get("results", [])
 
@@ -46,8 +49,6 @@ def format_search_results(results: list[dict]) -> str:
         title = item.get("title", "No title")
         url = item.get("url", "No URL")
         content = item.get("content", "No content")
-        formatted.append(
-            f"{i}. {title}\nURL: {url}\nSummary: {content}"
-        )
+        formatted.append(f"{i}. {title}\nURL: {url}\nSummary: {content}")
 
     return "\n\n".join(formatted)

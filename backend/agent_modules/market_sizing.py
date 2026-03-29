@@ -4,6 +4,7 @@ from agents import Agent, Runner, function_tool
 from models.schemas import MarketSizingOutput
 from tools.search import tavily_search_async, format_search_results
 
+
 @function_tool
 async def search_market_sizing(query: str) -> str:
     """
@@ -18,7 +19,7 @@ async def search_market_sizing(query: str) -> str:
 
 market_sizing_agent = Agent(
     name="Market Sizing Research Agent",
-    model="gpt-4o",
+    model="gpt-4o-mini",
     instructions="""
 You are a market research analyst specializing
 in TAM, SAM, growth projection, and public
@@ -30,6 +31,11 @@ specific company considering entry.
 
 You must use the search_market_sizing tool
 before producing your final analysis.
+
+Use the tavily_search tool to gather evidence needed for this analysis.
+Prefer a single search pass using the suggested queries.
+Do not run follow-up searches unless the initial results are clearly empty or irrelevant.
+Use the available results to complete the structured output.
 
 SCOPE
 
@@ -73,10 +79,18 @@ NUMBER RULES
 - Bad: "12.47% CAGR"
 - Numbers must come from search results only
 - Do not invent or recall figures from memory
-- If precise data is unavailable provide a
-  directional estimate in words
-- If no reliable figure exists say
-  "data not available" — do not guess
+- If precise data is unavailable, use the best available
+  approximate public estimate or directional range.
+- Prefer approximate forecasts such as "~$8B by 2030"
+  or "$8–10B estimated TAM" over declaring data unavailable.
+- Only return "data not available" if search results are
+  truly empty or irrelevant to market size or growth.
+- If multiple public estimates differ, choose the most
+  credible one and lower sizing_confidence accordingly.
+- If search results provide directional evidence from public
+  research but not perfect agreement, extract the best
+  available estimate and reflect uncertainty in
+  sizing_confidence rather than leaving fields blank.
 - TAM and SAM must be concise value strings — 
   not full sentences.
   Example: "~$34.1B by 2030" not 
@@ -135,6 +149,24 @@ sizing_confidence must be one of: high, medium, low
 - low: sparse, conflicting, or weakly grounded
      market sizing data
 
+APPROXIMATE MARKET DATA RULE
+
+If search results contain directional market estimates from
+credible sources (e.g., Gartner, Statista, McKinsey, IDC,
+Fortune Business Insights, MarketsandMarkets, Grand View Research),
+extract the approximate range rather than leaving fields blank.
+
+Prefer approximate estimates such as:
+- "$25B–$35B TAM"
+- "~18% CAGR"
+- "$80B projected by 2030"
+
+Directional estimates are acceptable when precise values
+are not consistently reported across sources.
+
+Only use "Data not available" when search results truly
+contain no market sizing information.
+
 SCOPE BOUNDARIES
 
 This agent does NOT:
@@ -162,10 +194,7 @@ Return JSON matching this exact schema:
 )
 
 
-async def run_market_sizing_agent(
-    company: str,
-    market: str
-) -> MarketSizingOutput:
+async def run_market_sizing_agent(company: str, market: str) -> MarketSizingOutput:
     """
     Execute the market sizing research agent.
     """
@@ -186,26 +215,22 @@ Use the search tool before generating your
 final structured analysis.
 
 Suggested searches:
-- {market} market size CAGR
-- {market} TAM SAM market size
-- {market} industry forecast growth
-- {market} market size Statista Gartner Forrester
-- {market} market growth projection 2030
+- {market} market size forecast 2030
+- {market} market CAGR report
+- {market} industry size and growth forecast
+- {market} market size Grand View Research MarketsandMarkets
+- {market} market outlook 2025 2030
 """
     result = await Runner.run(
         market_sizing_agent,
-        input=prompt
+        input=prompt,
+        max_turns=4,
     )
     return result.final_output
 
 
-def run_market_sizing_agent_sync(
-    company: str,
-    market: str
-) -> MarketSizingOutput:
+def run_market_sizing_agent_sync(company: str, market: str) -> MarketSizingOutput:
     """
     Synchronous wrapper for easier testing.
     """
-    return asyncio.run(
-        run_market_sizing_agent(company, market)
-    )
+    return asyncio.run(run_market_sizing_agent(company, market))

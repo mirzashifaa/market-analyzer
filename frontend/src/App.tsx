@@ -123,7 +123,7 @@ export default function App() {
       </main>
 
       <footer className="app-footer">
-        <span>Powered by OpenAI · Tavily · Aucctus FDE Assignment</span>
+        <span>Powered by OpenAI · Tavily </span>
       </footer>
     </div>
   );

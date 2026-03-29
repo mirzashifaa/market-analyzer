@@ -46,7 +46,7 @@ export function LoadingState({ company, market }: Props) {
       </div>
 
       <div className="loading-note">
-        This analysis typically takes 30–60 seconds
+        This analysis typically takes 60–90seconds
       </div>
     </div>
   );

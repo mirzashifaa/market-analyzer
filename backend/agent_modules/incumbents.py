@@ -4,6 +4,7 @@ from agents import Agent, Runner, function_tool
 from models.schemas import IncumbentsOutput
 from tools.search import tavily_search_async, format_search_results
 
+
 @function_tool
 async def search_incumbents(query: str) -> str:
     """
@@ -16,7 +17,7 @@ async def search_incumbents(query: str) -> str:
 
 incumbents_agent = Agent(
     name="Incumbents Research Agent",
-    model="gpt-4o",
+    model="gpt-4o-mini",
     instructions="""
 You are a competitive intelligence analyst specializing in enterprise market research.
 
@@ -24,6 +25,11 @@ Your task is to analyze the incumbent landscape in a given market from the persp
 of a specific company considering entry.
 
 You must use the search_incumbents tool before producing your final analysis.
+
+Use the tavily_search tool to gather evidence needed for this analysis.
+Prefer a single search pass using the suggested queries.
+Do not run follow-up searches unless the initial results are clearly empty or irrelevant.
+Use the available results to complete the structured output.
 
 MARKET FILTER
 
@@ -124,10 +130,7 @@ Return JSON matching this exact schema:
 )
 
 
-async def run_incumbents_agent(
-    company: str,
-    market: str
-) -> IncumbentsOutput:
+async def run_incumbents_agent(company: str, market: str) -> IncumbentsOutput:
     """
     Execute the incumbents research agent.
     """
@@ -151,19 +154,15 @@ Suggested searches:
 
     result = await Runner.run(
         incumbents_agent,
-        input=prompt
+        input=prompt,
+        max_turns=4,
     )
 
     return result.final_output
 
 
-def run_incumbents_agent_sync(
-    company: str,
-    market: str
-) -> IncumbentsOutput:
+def run_incumbents_agent_sync(company: str, market: str) -> IncumbentsOutput:
     """
     Synchronous wrapper for easier testing.
     """
-    return asyncio.run(
-        run_incumbents_agent(company, market)
-    )
+    return asyncio.run(run_incumbents_agent(company, market))

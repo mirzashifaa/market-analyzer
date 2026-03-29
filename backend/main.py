@@ -11,6 +11,9 @@ from models.schemas import (
     AnalysisRequest,
     AnalysisResponse,
     SynthesisOutput,
+    IncumbentsOutput,
+    EmergingCompetitorsOutput,
+    MarketSizingOutput,
 )
 from agent_modules.incumbents import run_incumbents_agent
 from agent_modules.emerging import run_emerging_agent
@@ -19,12 +22,6 @@ from agent_modules.synthesis import run_synthesis_agent
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-def normalize_name(value: str) -> str:
-    return "".join(
-        ch.lower() for ch in value if ch.isalnum() or ch.isspace()
-    ).strip()
 
 # Keep in sync with BROAD_MARKETS in frontend/src/components/InputForm.tsx
 BROAD_MARKET_INPUTS = {
@@ -43,8 +40,14 @@ BROAD_MARKET_INPUTS = {
     "business tools",
 }
 
+
+def normalize_name(value: str) -> str:
+    return "".join(ch.lower() for ch in value if ch.isalnum() or ch.isspace()).strip()
+
+
 def is_market_too_broad(market: str) -> bool:
     return normalize_name(market) in BROAD_MARKET_INPUTS
+
 
 def is_company_already_in_market(
     company: str,
@@ -73,21 +76,59 @@ def is_company_already_in_market(
     return False
 
 
-@retry(
+_retry = retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=2, min=5, max=30),
     reraise=True,
 )
+
+
+@_retry
+async def _run_incumbents(company: str, market: str) -> IncumbentsOutput:
+    return await run_incumbents_agent(company, market)
+
+
+@_retry
+async def _run_emerging(company: str, market: str) -> EmergingCompetitorsOutput:
+    return await run_emerging_agent(company, market)
+
+
+@_retry
+async def _run_market_sizing(company: str, market: str) -> MarketSizingOutput:
+    return await run_market_sizing_agent(company, market)
+
+
+@_retry
+async def _run_synthesis(
+    company: str,
+    market: str,
+    incumbents: IncumbentsOutput,
+    emerging: EmergingCompetitorsOutput,
+    market_sizing: MarketSizingOutput,
+) -> SynthesisOutput:
+    return await run_synthesis_agent(
+        company=company,
+        market=market,
+        incumbents=incumbents,
+        emerging=emerging,
+        market_sizing=market_sizing,
+    )
+
+
 async def run_analysis(
     company: str,
     market: str,
-):
+) -> tuple[IncumbentsOutput, EmergingCompetitorsOutput, MarketSizingOutput]:
+    """
+    Run the three research agents in parallel.
+    Each agent has its own independent retry scope —
+    a failure in one does not trigger a retry in the others.
+    """
     incumbents, emerging, market_sizing = await asyncio.gather(
-        run_incumbents_agent(company, market),
-        run_emerging_agent(company, market),
-        run_market_sizing_agent(company, market),
+        _run_incumbents(company, market),
+        _run_emerging(company, market),
+        _run_market_sizing(company, market),
     )
-
     return incumbents, emerging, market_sizing
 
 
@@ -119,7 +160,8 @@ async def health() -> dict[str, str]:
 async def analyze(request: AnalysisRequest) -> AnalysisResponse:
     """
     Run full market analysis for a company entering a target market.
-    Executes research agents in parallel and synthesizes results.
+    Executes research agents in parallel with per-agent retry,
+    then synthesizes results.
     """
     if is_market_too_broad(request.market):
         raise HTTPException(
@@ -139,7 +181,7 @@ async def analyze(request: AnalysisRequest) -> AnalysisResponse:
     )
 
     try:
-        logger.info("Running research agents with retry wrapper...")
+        logger.info("Running research agents in parallel with per-agent retry...")
         incumbents, emerging, market_sizing = await run_analysis(
             request.company,
             request.market,
@@ -201,7 +243,7 @@ async def analyze(request: AnalysisRequest) -> AnalysisResponse:
 
         logger.info("Research complete. Running synthesis...")
 
-        synthesis = await run_synthesis_agent(
+        synthesis = await _run_synthesis(
             company=request.company,
             market=request.market,
             incumbents=incumbents,
