@@ -26,6 +26,7 @@ def normalize_name(value: str) -> str:
         ch.lower() for ch in value if ch.isalnum() or ch.isspace()
     ).strip()
 
+# Keep in sync with BROAD_MARKETS in frontend/src/components/InputForm.tsx
 BROAD_MARKET_INPUTS = {
     "enterprise software",
     "ai software",
@@ -130,7 +131,7 @@ async def analyze(request: AnalysisRequest) -> AnalysisResponse:
                 "or 'applicant tracking software'."
             ),
         )
-        
+
     logger.info(
         "Starting analysis: %s → %s",
         request.company,

@@ -7,6 +7,7 @@ interface Props {
   loading: boolean;
 }
 
+// Keep in sync with BROAD_MARKET_INPUTS in backend/main.py
 const BROAD_MARKETS = new Set([
   "enterprise software",
   "ai software",
