@@ -56,9 +56,23 @@
     border-color: transparent;
   }
   
-  .confidence-high { color: var(--go); }
-  .confidence-medium { color: var(--amber); }
-  .confidence-low { color: var(--nogo); }
+  .confidence-badge.high {
+    background: var(--go-bg);
+    color: var(--go);
+    border: 1px solid rgba(24, 201, 122, 0.25);
+  }
+  
+  .confidence-badge.medium {
+    background: var(--amber-bg);
+    color: var(--amber);
+    border: 1px solid rgba(240, 168, 48, 0.25);
+  }
+  
+  .confidence-badge.low {
+    background: rgba(240, 54, 54, 0.1);
+    color: var(--nogo);
+    border: 1px solid rgba(240, 54, 54, 0.25);
+  }
   
   .card-summary {
     padding: 20px 28px;
@@ -428,6 +442,12 @@
     font-size: 11px;
     color: var(--text-3);
     line-height: 1.5;
+  }
+
+  .stage-badge.seed {
+    background: rgba(100, 120, 240, 0.12);
+    color: #7b8ff0;
+    border-color: rgba(100, 120, 240, 0.25);
   }
   
   @media (max-width: 768px) {

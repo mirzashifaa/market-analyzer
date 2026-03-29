@@ -14,12 +14,21 @@
     flex: 1;
     padding: 18px 20px 16px;
     position: relative;
+    border-bottom: 1px solid transparent;
   }
   
   .input-group:first-child {
     border-right: 1px solid var(--border);
   }
+  .input-group:focus-within {
+    background: rgba(232, 220, 200, 0.03);
+    border-bottom: 1px solid var(--accent);
+  }
   
+  .input-field:focus {
+    outline: none;
+  }
+
   .input-label {
     display: block;
     font-family: var(--font-mono);
@@ -88,20 +97,6 @@
   .submit-btn:disabled {
     opacity: 0.3;
     cursor: not-allowed;
-  }
-  
-  .btn-loading {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  
-  .loading-dot {
-    width: 4px;
-    height: 4px;
-    background: var(--bg);
-    border-radius: 50%;
-    animation: dotPulse 1.2s ease-in-out infinite;
   }
   
   .loading-dot:nth-child(2) { animation-delay: 0.2s; }

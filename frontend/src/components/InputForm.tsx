@@ -4,7 +4,6 @@ import "./InputForm.css";
 
 interface Props {
   onSubmit: (request: AnalysisRequest) => void;
-  loading: boolean;
 }
 
 // Keep in sync with BROAD_MARKET_INPUTS in backend/main.py
@@ -27,7 +26,7 @@ const BROAD_MARKETS = new Set([
 const isTooBroad = (market: string): boolean =>
   BROAD_MARKETS.has(market.toLowerCase().trim());
 
-export function InputForm({ onSubmit, loading }: Props) {
+export function InputForm({ onSubmit }: Props) {
   const [company, setCompany] = useState("");
   const [market, setMarket] = useState("");
 
@@ -41,7 +40,6 @@ export function InputForm({ onSubmit, loading }: Props) {
   const canSubmit =
   company.trim().length >= 2 &&
   market.trim().length >= 2 &&
-  !loading &&
   !isTooBroad(market);
 
   return (
@@ -55,7 +53,7 @@ export function InputForm({ onSubmit, loading }: Props) {
             value={company}
             onChange={(e) => setCompany(e.target.value)}
             placeholder="e.g. Shopify"
-            disabled={loading}
+            disabled={false}
             autoFocus
           />
         </div>
@@ -72,7 +70,7 @@ export function InputForm({ onSubmit, loading }: Props) {
             value={market}
             onChange={(e) => setMarket(e.target.value)}
             placeholder="e.g. payroll software"
-            disabled={loading}
+            disabled={false}
           />
         </div>
 
@@ -81,15 +79,7 @@ export function InputForm({ onSubmit, loading }: Props) {
           type="submit"
           disabled={!canSubmit}
         >
-          {loading ? (
-            <span className="btn-loading">
-              <span className="loading-dot" />
-              <span className="loading-dot" />
-              <span className="loading-dot" />
-            </span>
-          ) : (
-            "Analyze Market"
-          )}
+        Analyze Market
         </button>
       </form>
 

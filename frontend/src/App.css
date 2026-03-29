@@ -191,7 +191,7 @@
 .results-grid {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 }
 
 /* Footer */
@@ -202,6 +202,15 @@
   font-size: 11px;
   color: var(--text-3);
   letter-spacing: 0.04em;
+}
+
+.results-attribution {
+  margin-top: 32px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+  text-align: center;
 }
 
 @media (max-width: 640px) {
