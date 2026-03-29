@@ -38,9 +38,9 @@ export function InputForm({ onSubmit }: Props) {
   };
 
   const canSubmit =
-  company.trim().length >= 2 &&
-  market.trim().length >= 2 &&
-  !isTooBroad(market);
+    company.trim().length >= 2 &&
+    market.trim().length >= 2 &&
+    !isTooBroad(market);
 
   return (
     <div className="input-form-wrapper">
@@ -53,7 +53,6 @@ export function InputForm({ onSubmit }: Props) {
             value={company}
             onChange={(e) => setCompany(e.target.value)}
             placeholder="e.g. Shopify"
-            disabled={false}
             autoFocus
           />
         </div>
@@ -70,22 +69,18 @@ export function InputForm({ onSubmit }: Props) {
             value={market}
             onChange={(e) => setMarket(e.target.value)}
             placeholder="e.g. payroll software"
-            disabled={false}
           />
         </div>
 
-        <button
-          className="submit-btn"
-          type="submit"
-          disabled={!canSubmit}
-        >
-        Analyze Market
+        <button className="submit-btn" type="submit" disabled={!canSubmit}>
+          Analyze Market
         </button>
       </form>
 
       {isTooBroad(market) && (
         <div className="input-warning">
-          ⚠ Market is too broad — try "payroll software" or "video editing software"
+          ⚠ Market is too broad — try "payroll software" or "video editing
+          software"
         </div>
       )}
     </div>
