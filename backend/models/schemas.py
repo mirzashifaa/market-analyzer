@@ -3,6 +3,7 @@ from typing import Literal
 
 # --- Incumbents ---
 
+
 class Incumbent(BaseModel):
     name: str
     product: str
@@ -19,7 +20,9 @@ class IncumbentsOutput(BaseModel):
     positioning_gaps: str
     summary: str
 
+
 # --- Emerging Competitors ---
+
 
 class EmergingCompetitor(BaseModel):
     name: str
@@ -38,20 +41,23 @@ class EmergingCompetitorsOutput(BaseModel):
     trend_summary: str
     summary: str
 
+
 # --- Market Sizing ---
+
 
 class MarketSizingOutput(BaseModel):
     tam: str
     sam: str
     growth_rate: str
     projection: str
-    key_drivers: list[str]    
-    key_risks: list[str]      
+    key_drivers: list[str]
+    key_risks: list[str]
     sources: list[str]
     sizing_confidence: Literal["high", "medium", "low"]
 
 
 # --- Synthesis ---
+
 
 class SynthesisOutput(BaseModel):
     recommendation: Literal["GO", "NO-GO"]
@@ -63,7 +69,9 @@ class SynthesisOutput(BaseModel):
     key_opportunities: list[str]
     key_risks: list[str]
 
+
 # --- API Request / Response ---
+
 
 class AnalysisRequest(BaseModel):
     company: str = Field(min_length=2, max_length=100)
