@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import type { AnalysisRequest, AnalysisResponse } from "./types";
 
 const client = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
   headers: { "Content-Type": "application/json" },
   timeout: 120000, // 2 minute timeout
 });
