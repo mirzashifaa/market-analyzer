@@ -57,7 +57,7 @@ the final recommendation is produced.
 
 **Tech stack:**
 - Backend: Python, FastAPI, OpenAI Agents SDK, Pydantic
-- AI: GPT-4o, Tavily web search
+- AI: GPT-4o, GPT-4o-mini, Tavily web search
 - Frontend: React, TypeScript, Vite, Axios
 
 ---
@@ -69,6 +69,10 @@ Agents 1, 2, and 3 run concurrently via `asyncio.gather()`.
 Tavily calls are wrapped in `asyncio.to_thread()` to prevent 
 blocking the event loop. This reduces total analysis time 
 from ~90s sequential to ~30–40s parallel.
+
+Using GPT-4o-mini for research agents also reduces token
+cost and rate-limit pressure while preserving output
+quality for structured extraction tasks.
 
 **Synthesis agent has no tools**  
 The synthesis agent reasons only over structured Pydantic 
@@ -82,12 +86,22 @@ Every research agent produces a typed Pydantic model rather
 than an unstructured natural-language summary. This keeps the 
 evidence passed into synthesis schema-bound and predictable.
 
-**GPT-4o for all agents**  
-All four agents use GPT-4o. The research agents require
-strong instruction-following to respect filtering rules
-(e.g. Seed–Series B only, no fabricated companies).
-The synthesis agent requires strong reasoning to weigh
-conflicting evidence across three inputs.
+**Model selection per agent**
+
+Research agents (Incumbents, Emerging Competitors, and
+Market Sizing) use GPT-4o-mini. These agents primarily
+perform structured information extraction, tool calling,
+and schema-constrained output generation. GPT-4o-mini is
+optimized for instruction-following and provides higher
+throughput limits, which allows the three research agents
+to run in parallel efficiently.
+
+The Synthesis agent uses GPT-4o. This stage performs the
+final reasoning step, weighing potentially conflicting
+signals from incumbents, emerging competitors, and market
+sizing to produce a GO / NO-GO recommendation. The stronger
+reasoning capability of GPT-4o is reserved for this final
+decision stage.
 
 **Retry with exponential backoff**  
 Research agents use `tenacity` with exponential backoff 
@@ -158,11 +172,11 @@ Enter a company name and a specific market category:
 
 | Company | Market | Expected |
 |---------|--------|----------|
-| Stripe | payroll software | GO |
-| Canva | interior design software | GO |
-| Spotify | podcast advertising software | NO-GO |
-| McDonald's | cloud computing | NO-GO |
-| Apple | payroll software | NO-GO |
+| Stripe | Payroll Software | GO |
+| Canva | Interior Design Software | GO |
+| Spotify | Podcast Advertising Software | NO-GO |
+| McDonald's | Cloud Computing | NO-GO |
+| Apple | Payroll Software | NO-GO |
 
 **Tips for best results:**
 
@@ -195,7 +209,7 @@ emerging competitors, market sizing, and synthesis.
 
 ---
 
-## Known Limitations
+## Limitations & Assumptions
 
 **Already-in-market detection uses normalized name matching**  
 The guardrail compares normalized company names against incumbent names.
@@ -220,12 +234,23 @@ version would integrate Crunchbase or PitchBook APIs.
 Analyst reports from Gartner, Forrester, and Statista are 
 paywalled. The market sizing agent surfaces publicly available 
 references to these reports rather than accessing them directly. 
-Figures are directional, not investment-grade.
+Figures should be interpreted as directional estimates rather than investment-grade data.
 
 **Rate limits under heavy load**  
 The system depends on external LLM APIs, so repeated analyses in 
 quick succession may trigger rate limits. The backend handles transient 
 failures with retry and returns a clear error when limits are exceeded.
+
+**Company name as primary company context**
+
+The system assumes the company name alone provides sufficient
+context for initial analysis. GPT-4o's training knowledge is
+used to infer the company's core business, strengths, and
+typical product areas.
+
+In production, this would be replaced with a Company Profile
+Agent that retrieves verified company data before running
+competitive analysis.
 
 ---
 
@@ -261,7 +286,51 @@ using Redis or a simple key-value store keyed on
 repeated queries, reduce latency to near-zero for seen pairs, 
 and significantly cut token costs at scale.
 
+**Smarter frontend validation**
+The current frontend validates only basic input quality and broad market categories.
+A stronger version would detect likely typos, normalize near-matches, and suggest
+more specific market names before the request is sent to the backend. This would
+improve usability and reduce failed or low-quality analyses caused by ambiguous input.
+
+**Semantic broad-market detection**
+The current broad-market guardrail relies on a static set of normalized category names.
+A stronger version would use synonym expansion, fuzzy matching, or an LLM-based
+classifier to identify overly broad market inputs more reliably across phrasing
+variants such as plurals, aliases, and near-equivalent terms.
+
 ---
+
+## Development Constraints
+
+This implementation was intentionally built using **open-access tools and APIs**
+so the entire system can run in a **minimum cost development environment**.
+
+Several engineering decisions reflect this constraint while still preserving
+the architecture expected for a production-grade system:
+
+- **Open web search (Tavily)** is used instead of paid market intelligence
+  platforms such as Crunchbase, PitchBook, or CB Insights.
+
+- **Model selection balances quality and cost efficiency.**
+  Lightweight models (GPT-4o-mini) are used for research agents,
+  while stronger reasoning models are reserved for synthesis.
+
+- **Funding and market signals are derived from publicly available sources**
+  rather than proprietary financial datasets.
+
+- **Concurrency and retry behavior are intentionally conservative**
+  to remain compatible with free-tier API limits.
+
+These constraints ensure the project is **fully reproducible without requiring
+paid services**, while still demonstrating the agent architecture,
+reasoning workflow, and system design expected in a production system.
+
+In a production deployment, these constraints would typically be replaced with:
+
+- verified company intelligence APIs  
+- structured market datasets  
+- deeper financial data sources  
+- stronger model tiers for research depth
 
 ## Project Structure
 ```
